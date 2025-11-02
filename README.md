@@ -1,32 +1,60 @@
-# `Turborepo` Vite starter
+# Better Navigation XR
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+A hand gesture-based navigation library for VR that replaces the unintuitive point-and-click paradigm with natural, fluid interactions.
 
-## Using this example
+## Overview
 
-Run the following command:
+Better Navigation XR addresses the fundamental challenge of VR UI navigation by developing an intuitive gesture-based interaction system. Instead of forcing users to use their hands as cursors to poke at floating screens, this library enables natural hand gestures optimized for three-dimensional space.
 
-```sh
-npx create-turbo@latest -e with-vite-react
+## Team
+
+- [Leo Wang](https://github.com/leowio)
+- Benjamin Cheung
+- Ashton Chiu
+
+Supervision: Prométhée Spathis & Jung Hyun Moon
+
+## Core Gestures
+
+- **Scrolling**: Gentle "wave" motion with an open palm
+- **Swiping**: Quick, directional "flick" of the wrist or hand
+- **Zooming**: Two-handed gesture (pull apart to zoom in, push together to zoom out)
+- **Confirm/Decline**: Thumbs-up / thumbs-down gesture
+
+## Technology Stack
+
+- **WebXR**: Browser-based VR environment
+- **React Three Fiber**: 3D rendering framework
+- **@react-three/xr**: WebXR integration
+- **three.js**: 3D graphics library
+- **TypeScript**: Type-safe development
+
+## Project Structure
+
+This is a monorepo using Turborepo:
+
+- `apps/web`: WebXR demo application
+- `packages/nav`: Core gesture recognition library (`@repo/nav`)
+
+## Getting Started
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build all packages
+pnpm build
 ```
 
-## What's inside?
+The web app will be available at `https://localhost:5173` (HTTPS required for WebXR).
 
-This Turborepo includes the following packages and apps:
+## Development
 
-### Apps and Packages
+The gesture recognition system uses raw hand joint data from the WebXR API (21 joints per hand) to detect gestures through rule-based algorithms and velocity/distance thresholds.
 
-- `web`: react [vite](https://vitejs.dev) ts app
-- `@repo/ui`: a stub component library shared by `web` application
-- `@repo/eslint-config`: shared `eslint` configurations
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## License
 
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+MIT
