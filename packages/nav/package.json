@@ -23,8 +23,6 @@
     "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@types/three": "^0.181.0",
