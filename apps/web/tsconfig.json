@@ -1,14 +1,30 @@
 {
-  "extends": "@repo/typescript-config/vite.json",
-  "include": [
-    "src"
-  ],
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    "baseUrl": ".",
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
     "jsx": "react-jsx",
+    "module": "es2022",
+    "moduleResolution": "Bundler",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "paths": {
       "~/*": [
         "./src/*"
       ]
     },
-  }
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022"
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
