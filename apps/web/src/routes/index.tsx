@@ -7,6 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { DialogDemo } from "~/components/DialogDemo";
 import Scene from "~/components/scene";
+import { XRJointsProvider } from "@repo/nav/components";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -97,40 +98,42 @@ function Index() {
         <OrbitControls />
         <PointerEvents />
         <XR store={store}>
-          <Scene />
-          <group position={[0, 0, 10]} rotation={[0, Math.PI, 0]}>
-            <Container
-              backgroundColor={colors.background}
-              sizeX={8}
-              sizeY={4}
-              flexDirection="column"
-              borderWidth={5}
-              borderColor="black"
-              gapRow={30}
-              borderRadius={10}
-              alignItems="center"
-              justifyContent="center"
-              padding={10}
-            >
-              {currentPage === 1 ? <PageOne /> : <PageTwo />}
-              <Container flexDirection="row" gap={10}>
-                <Button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(1)}
-                  backgroundColor={colors.primary}
-                >
-                  <Text color={colors.primaryForeground}>Previous Page</Text>
-                </Button>
-                <Button
-                  disabled={currentPage === 2}
-                  onClick={() => setCurrentPage(2)}
-                  backgroundColor={colors.primary}
-                >
-                  <Text color={colors.primaryForeground}>Next Page</Text>
-                </Button>
+          <XRJointsProvider>
+            <Scene />
+            <group position={[0, 0, 10]} rotation={[0, Math.PI, 0]}>
+              <Container
+                backgroundColor={colors.background}
+                sizeX={8}
+                sizeY={4}
+                flexDirection="column"
+                borderWidth={5}
+                borderColor="black"
+                gapRow={30}
+                borderRadius={10}
+                alignItems="center"
+                justifyContent="center"
+                padding={10}
+              >
+                {currentPage === 1 ? <PageOne /> : <PageTwo />}
+                <Container flexDirection="row" gap={10}>
+                  <Button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(1)}
+                    backgroundColor={colors.primary}
+                  >
+                    <Text color={colors.primaryForeground}>Previous Page</Text>
+                  </Button>
+                  <Button
+                    disabled={currentPage === 2}
+                    onClick={() => setCurrentPage(2)}
+                    backgroundColor={colors.primary}
+                  >
+                    <Text color={colors.primaryForeground}>Next Page</Text>
+                  </Button>
+                </Container>
               </Container>
-            </Container>
-          </group>
+            </group>
+          </XRJointsProvider>
         </XR>
       </Canvas>
       <button
