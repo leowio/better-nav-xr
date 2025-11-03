@@ -38,6 +38,9 @@ function PageOne() {
             <Text color={colors.primaryForeground}>Test stuff</Text>
           </Container>
         ))}
+        <Button>
+          <Text>Finished</Text>
+        </Button>
       </Container>
     </Container>
   );
