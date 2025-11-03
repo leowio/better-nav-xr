@@ -9,7 +9,7 @@ Better Navigation XR addresses the fundamental challenge of VR UI navigation by 
 ## Team
 
 - [Leo Wang](https://github.com/leowio)
-- Benjamin Cheung
+- [Benjamin Cheung](https://github.com/BCCheungGit)
 - Ashton Chiu
 
 Supervision: Prométhée Spathis & Jung Hyun Moon
