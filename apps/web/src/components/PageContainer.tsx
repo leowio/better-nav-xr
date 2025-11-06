@@ -56,6 +56,7 @@ function PageTwo() {
       flexGrow={1}
       alignItems="center"
       justifyContent="center"
+      width="100%"
     >
       <Text color={colors.primary}>Page Two</Text>
       <DialogDemo dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />{" "}
