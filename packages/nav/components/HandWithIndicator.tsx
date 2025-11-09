@@ -1,4 +1,4 @@
-import { XRHandModel, XRSpace } from "@react-three/xr";
+import { XRHandModel } from "@react-three/xr";
 import { useAtom } from "jotai";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -11,7 +11,7 @@ const HandWithIndicator = ({
   offColorHex?: number;
   neutralColorHex: number;
 }) => {
-  const [gesture, _] = useAtom(gestureAtom);
+  const [gesture] = useAtom(gestureAtom);
   const handRef = useRef<THREE.Group>(null);
   const originalColorsRef = useRef<
     Map<THREE.MeshStandardMaterial, THREE.Color>

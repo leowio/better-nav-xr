@@ -31,26 +31,43 @@ export const XRJointsProvider = ({ children }: { children: ReactNode }) => {
   }, [xrStore]);
 
   useEffect(() => {
-    let intervalId: number | undefined;
-    if (session && originReferenceSpace) {
-      intervalId = window.setInterval(() => {
-        if (session && originReferenceSpace) {
-          session.requestAnimationFrame((time, frame) => {
-            const jointTransforms = getJointsFromXRFrame(
-              time,
-              frame,
-              session,
-              originReferenceSpace
-            );
-            if (jointTransforms) {
-              setJoints(jointTransforms);
-            }
-          });
+    if (!session || !originReferenceSpace) return;
+
+    const jointsRef: { current: Joints } = {
+      current: new Float32Array(25 * 16),
+    };
+    let lastUpdateTime = 0;
+    const UPDATE_INTERVAL_MS = 100; // Throttle state updates to ~10Hz
+
+    const animate = () => {
+      session.requestAnimationFrame((time, frame) => {
+        const jointTransforms = getJointsFromXRFrame(
+          time,
+          frame,
+          session,
+          originReferenceSpace
+        );
+        if (jointTransforms) {
+          // Update ref immediately (no React re-render)
+          jointsRef.current = jointTransforms;
+
+          // Only update state at a throttled rate (e.g., 10Hz)
+          // This triggers React updates for consumers
+          const now = performance.now();
+          if (now - lastUpdateTime >= UPDATE_INTERVAL_MS) {
+            setJoints(jointTransforms);
+            lastUpdateTime = now;
+          }
         }
-      }, 100);
-    }
+
+        animate(); // Chain next frame
+      });
+    };
+
+    animate();
+
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      // Cleanup handled by session lifecycle
     };
   }, [session, originReferenceSpace]);
 
