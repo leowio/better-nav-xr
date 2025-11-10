@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DialogDemo } from "./DialogDemo";
 import { useSwipeGesture } from "@repo/nav/hooks";
 
-function PageOne() {
+function PageOne({ setCurrentPage }) {
   return (
     <Container
       flexDirection="column"
@@ -38,8 +38,12 @@ function PageOne() {
             <Text color={colors.primaryForeground}>Test stuff</Text>
           </Container>
         ))}
-        <Button>
-          <Text>Finished</Text>
+        <Button
+          onClick={() => {
+            setCurrentPage(2);
+          }}
+        >
+          <Text>Next</Text>
         </Button>
       </Container>
     </Container>
@@ -97,7 +101,11 @@ export function PageContainer() {
         justifyContent="center"
         padding={10}
       >
-        {currentPage === 1 ? <PageOne /> : <PageTwo />}
+        {currentPage === 1 ? (
+          <PageOne setCurrentPage={setCurrentPage} />
+        ) : (
+          <PageTwo />
+        )}
         <Container flexDirection="row" gap={10}>
           <Button
             disabled={currentPage === 1}
