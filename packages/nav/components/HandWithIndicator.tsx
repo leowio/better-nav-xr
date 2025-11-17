@@ -1,4 +1,8 @@
-import { XRHandModel } from "@react-three/xr";
+import {
+  DefaultXRHandTouchPointer,
+  DefaultXRInputSourceRayPointer,
+  XRHandModel,
+} from "@react-three/xr";
 import { useAtom } from "jotai";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -61,6 +65,8 @@ const HandWithIndicator = ({
         <group ref={handRef}>
           <XRHandModel />
         </group>
+        <DefaultXRHandTouchPointer makeDefault />
+        <DefaultXRInputSourceRayPointer makeDefault />
       </Suspense>
     </>
   );

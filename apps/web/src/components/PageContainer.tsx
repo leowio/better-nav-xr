@@ -4,7 +4,11 @@ import { useState } from "react";
 import { DialogDemo } from "./DialogDemo";
 import { useSwipeGesture } from "@repo/nav/hooks";
 
-function PageOne({ setCurrentPage }) {
+function PageOne({
+  setCurrentPage,
+}: {
+  setCurrentPage: (page: number) => void;
+}) {
   return (
     <Container
       flexDirection="column"

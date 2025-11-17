@@ -1,0 +1,49 @@
+import { OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { createXRStore, PointerEvents, XR } from "@react-three/xr";
+import { createFileRoute } from "@tanstack/react-router";
+import Scene from "~/components/scene";
+import { XRJointsProvider } from "@repo/nav/components";
+import { PageContainerWithEval } from "~/components/PageContainerWithEval";
+import { HandWithIndicator } from "@repo/nav/components";
+
+export const Route = createFileRoute("/eval")({
+  component: Eval,
+});
+
+function Eval() {
+  const store = createXRStore({
+    hand: {
+      left: true,
+      right: () => <HandWithIndicator neutralColorHex={0x2ea9df} />,
+    },
+    offerSession: "immersive-vr",
+    emulate: {
+      inject: false,
+    },
+  });
+
+  return (
+    <main className="relative h-[800px] w-[800px] grow-0 rounded-lg bg-linear-to-b from-[#2e026d] to-[#15162c] overflow-hidden">
+      <Canvas dpr={[1, 2]} shadows camera={{ position: [0, 10, -40], fov: 25 }}>
+        <OrbitControls />
+        <PointerEvents />
+        <XR store={store}>
+          <XRJointsProvider>
+            <Scene />
+            <PageContainerWithEval />
+          </XRJointsProvider>
+        </XR>
+      </Canvas>
+      <button
+        type="button"
+        className="absolute right-4 bottom-4 rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
+        onClick={() => {
+          store.enterVR();
+        }}
+      >
+        Enter VR
+      </button>
+    </main>
+  );
+}
