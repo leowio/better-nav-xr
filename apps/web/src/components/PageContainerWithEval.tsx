@@ -4,7 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import { DialogDemo } from "./DialogDemo";
 import { useSwipeGesture } from "@repo/nav/hooks";
 
-function PageOne({ setCurrentPage }: { setCurrentPage: () => void }) {
+function PageOne({
+  setCurrentPage,
+  scrollContainerRef,
+}: {
+  setCurrentPage: () => void;
+  scrollContainerRef: React.RefObject<any>;
+}) {
   return (
     <Container
       flexDirection="column"
@@ -15,6 +21,7 @@ function PageOne({ setCurrentPage }: { setCurrentPage: () => void }) {
     >
       <Text color={colors.primary}>Page One</Text>
       <Container
+        ref={scrollContainerRef}
         sizeY={2.5}
         overflow="scroll"
         borderWidth={2}
@@ -82,23 +89,21 @@ export function PageContainerWithEval() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeEvaluation, setActiveEvaluation] = useState<string | null>(null);
   const [statusText, setStatusText] = useState("Wait for command");
-  const [executionTime, setExecutionTime] = useState<number | null>(null);
   const timerStartRef = useRef<number | null>(null);
   const nextEvaluationTimeoutRef = useRef<number | null>(null);
   const currentEvaluationIndexRef = useRef(0);
   const evaluableItemsRef = useRef<EvaluableItem[]>([]);
+  const scrollContainerRef = useRef<any>(null);
 
   const startEvaluation = (itemId: string, itemName: string) => {
     setActiveEvaluation(itemId);
     setStatusText(`Evaluating: ${itemName}...`);
-    setExecutionTime(null);
     timerStartRef.current = performance.now();
   };
 
   const stopEvaluation = (itemId: string) => {
     if (timerStartRef.current !== null) {
       const elapsed = performance.now() - timerStartRef.current;
-      setExecutionTime(elapsed);
       timerStartRef.current = null;
       setStatusText("Wait for command");
       console.log(`${itemId} completed in ${elapsed.toFixed(2)}ms`);
@@ -171,11 +176,47 @@ export function PageContainerWithEval() {
     };
   }, []);
 
+  const handleScrollUp = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollPosition = container.scrollPosition?.value;
+      const maxScrollPosition = container.maxScrollPosition?.value;
+
+      if (scrollPosition && Array.isArray(scrollPosition)) {
+        console.log("scrollPosition", scrollPosition);
+        // scrollPosition is [x, y], swipe up means scroll content up (increase y)
+        const currentY = scrollPosition[1] || 0;
+        const maxY = maxScrollPosition?.[1] || 0;
+        const newY = Math.min(maxY, currentY + 100);
+        // Update the scroll position by reassigning the array
+        container.scrollPosition.value = [scrollPosition[0] || 0, newY];
+      }
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollPosition = container.scrollPosition?.value;
+      const maxScrollPosition = container.maxScrollPosition?.value;
+
+      if (scrollPosition && Array.isArray(scrollPosition)) {
+        console.log("scrollPosition", scrollPosition);
+        // scrollPosition is [x, y], swipe down means scroll content down (decrease y)
+        const currentY = scrollPosition[1] || 0;
+        const maxY = maxScrollPosition?.[1] || 0;
+        const newY = Math.max(0, currentY - 100);
+        // Update the scroll position by reassigning the array
+        container.scrollPosition.value = [scrollPosition[0] || 0, newY];
+      }
+    }
+  };
+
   useSwipeGesture({
     onLeft: () => handleNextPage(),
     onRight: () => handlePreviousPage(),
-    onUp: () => console.log("up swipe detected"),
-    onDown: () => console.log("down swipe detected"),
+    onUp: () => handleScrollUp(),
+    onDown: () => handleScrollDown(),
   });
 
   return (
@@ -194,7 +235,10 @@ export function PageContainerWithEval() {
         padding={10}
       >
         {currentPage === 1 ? (
-          <PageOne setCurrentPage={handleNextPage} />
+          <PageOne
+            setCurrentPage={handleNextPage}
+            scrollContainerRef={scrollContainerRef}
+          />
         ) : (
           <PageTwo />
         )}
