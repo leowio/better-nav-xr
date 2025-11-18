@@ -1,13 +1,17 @@
 import { Container, Text } from "@react-three/uikit";
 import { colors, Button } from "@react-three/uikit-default";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { DialogDemo } from "./DialogDemo";
 import { useSwipeGesture } from "@repo/nav/hooks";
 
+const SCROLL_AMOUNT = 200;
+
 function PageOne({
   setCurrentPage,
+  scrollContainerRef,
 }: {
   setCurrentPage: (page: number) => void;
+  scrollContainerRef: React.RefObject<any>;
 }) {
   return (
     <Container
@@ -19,6 +23,7 @@ function PageOne({
     >
       <Text color={colors.primary}>Page One</Text>
       <Container
+        ref={scrollContainerRef}
         sizeY={2.5}
         overflow="scroll"
         borderWidth={2}
@@ -82,12 +87,49 @@ function PageTwo() {
 
 export function PageContainer() {
   const [currentPage, setCurrentPage] = useState(1);
+  const scrollContainerRef = useRef<any>(null);
+
+  const handleScrollUp = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollPosition = container.scrollPosition?.value;
+      const maxScrollPosition = container.maxScrollPosition?.value;
+
+      if (scrollPosition && Array.isArray(scrollPosition)) {
+        console.log("scrollPosition", scrollPosition);
+        // scrollPosition is [x, y], swipe up means scroll content up (increase y)
+        const currentY = scrollPosition[1] || 0;
+        const maxY = maxScrollPosition?.[1] || 0;
+        const newY = Math.min(maxY, currentY + SCROLL_AMOUNT);
+        // Update the scroll position by reassigning the array
+        container.scrollPosition.value = [scrollPosition[0] || 0, newY];
+      }
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const scrollPosition = container.scrollPosition?.value;
+      const maxScrollPosition = container.maxScrollPosition?.value;
+
+      if (scrollPosition && Array.isArray(scrollPosition)) {
+        console.log("scrollPosition", scrollPosition);
+        // scrollPosition is [x, y], swipe down means scroll content down (decrease y)
+        const currentY = scrollPosition[1] || 0;
+        const maxY = maxScrollPosition?.[1] || 0;
+        const newY = Math.max(0, currentY - SCROLL_AMOUNT);
+        // Update the scroll position by reassigning the array
+        container.scrollPosition.value = [scrollPosition[0] || 0, newY];
+      }
+    }
+  };
 
   useSwipeGesture({
     onLeft: () => setCurrentPage(2),
     onRight: () => setCurrentPage(1),
-    onUp: () => console.log("up swipe detected"),
-    onDown: () => console.log("down swipe detected"),
+    onUp: () => handleScrollUp(),
+    onDown: () => handleScrollDown(),
   });
 
   return (
@@ -106,7 +148,10 @@ export function PageContainer() {
         padding={10}
       >
         {currentPage === 1 ? (
-          <PageOne setCurrentPage={setCurrentPage} />
+          <PageOne
+            setCurrentPage={setCurrentPage}
+            scrollContainerRef={scrollContainerRef}
+          />
         ) : (
           <PageTwo />
         )}

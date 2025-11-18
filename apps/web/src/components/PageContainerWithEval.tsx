@@ -4,80 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { DialogDemo } from "./DialogDemo";
 import { useSwipeGesture } from "@repo/nav/hooks";
 
-function PageOne({
-  setCurrentPage,
-  scrollContainerRef,
-}: {
-  setCurrentPage: () => void;
-  scrollContainerRef: React.RefObject<any>;
-}) {
-  return (
-    <Container
-      flexDirection="column"
-      gapRow={10}
-      flexGrow={1}
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Text color={colors.primary}>Page One</Text>
-      <Container
-        ref={scrollContainerRef}
-        sizeY={2.5}
-        overflow="scroll"
-        borderWidth={2}
-        borderColor="gray"
-        borderRadius={8}
-        backgroundColor={colors.background}
-        padding={10}
-        flexDirection="column"
-        gapRow={10}
-      >
-        {Array.from({ length: 20 }).map((_, i) => (
-          <Container
-            key={i}
-            sizeX={1}
-            sizeY={0.3}
-            backgroundColor={colors.primary}
-            borderRadius={5}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text color={colors.primaryForeground}>Test stuff</Text>
-          </Container>
-        ))}
-        <Button onClick={setCurrentPage}>
-          <Text>Next</Text>
-        </Button>
-      </Container>
-    </Container>
-  );
-}
-
-function PageTwo() {
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  return (
-    <Container
-      flexDirection="column"
-      gapRow={10}
-      flexGrow={1}
-      alignItems="center"
-      justifyContent="center"
-      width="100%"
-    >
-      <Text color={colors.primary}>Page Two</Text>
-      <DialogDemo dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />{" "}
-      <Button
-        onClick={() => {
-          console.log("dialog open");
-          setDialogOpen(true);
-        }}
-      >
-        <Text>Open Dialog</Text>
-      </Button>
-    </Container>
-  );
-}
+const SCROLL_AMOUNT = 200;
 
 type EvaluableItem = {
   id: string;
@@ -89,6 +16,7 @@ export function PageContainerWithEval() {
   const [currentPage, setCurrentPage] = useState(1);
   const [activeEvaluation, setActiveEvaluation] = useState<string | null>(null);
   const [statusText, setStatusText] = useState("Wait for command");
+  const [dialogOpen, setDialogOpen] = useState(false);
   const timerStartRef = useRef<number | null>(null);
   const nextEvaluationTimeoutRef = useRef<number | null>(null);
   const currentEvaluationIndexRef = useRef(0);
@@ -140,17 +68,24 @@ export function PageContainerWithEval() {
 
   const evaluableItems: EvaluableItem[] = [
     {
+      id: "scroll-to-specific-item",
+      name: "Scroll to Specific Item",
+      action: () => {
+        startEvaluation("scroll-to-specific-item", "Scroll to Specific Item");
+      },
+    },
+    {
       id: "next-page",
       name: "Next Page Button",
       action: () => {
-        startEvaluation("next-page", "Next Page Button");
+        startEvaluation("next-page", "Go to next page");
       },
     },
     {
       id: "previous-page",
       name: "Previous Page Button",
       action: () => {
-        startEvaluation("previous-page", "Previous Page Button");
+        startEvaluation("previous-page", "Go to previous page");
       },
     },
   ];
@@ -187,7 +122,7 @@ export function PageContainerWithEval() {
         // scrollPosition is [x, y], swipe up means scroll content up (increase y)
         const currentY = scrollPosition[1] || 0;
         const maxY = maxScrollPosition?.[1] || 0;
-        const newY = Math.min(maxY, currentY + 100);
+        const newY = Math.min(maxY, currentY + SCROLL_AMOUNT);
         // Update the scroll position by reassigning the array
         container.scrollPosition.value = [scrollPosition[0] || 0, newY];
       }
@@ -205,7 +140,7 @@ export function PageContainerWithEval() {
         // scrollPosition is [x, y], swipe down means scroll content down (decrease y)
         const currentY = scrollPosition[1] || 0;
         const maxY = maxScrollPosition?.[1] || 0;
-        const newY = Math.max(0, currentY - 100);
+        const newY = Math.max(0, currentY - SCROLL_AMOUNT);
         // Update the scroll position by reassigning the array
         container.scrollPosition.value = [scrollPosition[0] || 0, newY];
       }
@@ -235,12 +170,86 @@ export function PageContainerWithEval() {
         padding={10}
       >
         {currentPage === 1 ? (
-          <PageOne
-            setCurrentPage={handleNextPage}
-            scrollContainerRef={scrollContainerRef}
-          />
+          <Container
+            flexDirection="column"
+            gapRow={10}
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text color={colors.primary}>Page One</Text>
+            <Container
+              ref={scrollContainerRef}
+              sizeY={2.5}
+              overflow="scroll"
+              borderWidth={2}
+              borderColor="gray"
+              borderRadius={8}
+              backgroundColor={colors.background}
+              padding={10}
+              flexDirection="column"
+              gapRow={10}
+            >
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Container
+                  key={i}
+                  sizeX={1}
+                  sizeY={0.3}
+                  backgroundColor={colors.primary}
+                  borderRadius={5}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text color={colors.primaryForeground}>Test stuff</Text>
+                </Container>
+              ))}
+              <Button
+                onClick={() => {
+                  stopEvaluation("scroll-to-specific-item");
+                }}
+                backgroundColor={colors.accent}
+                color={colors.accentForeground}
+              >
+                <Text>Click this</Text>
+              </Button>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Container
+                  key={i}
+                  sizeX={1}
+                  sizeY={0.3}
+                  backgroundColor={colors.primary}
+                  borderRadius={5}
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text color={colors.primaryForeground}>Test stuff</Text>
+                </Container>
+              ))}
+            </Container>
+          </Container>
         ) : (
-          <PageTwo />
+          <Container
+            flexDirection="column"
+            gapRow={10}
+            flexGrow={1}
+            alignItems="center"
+            justifyContent="center"
+            width="100%"
+          >
+            <Text color={colors.primary}>Page Two</Text>
+            <DialogDemo
+              dialogOpen={dialogOpen}
+              setDialogOpen={setDialogOpen}
+            />{" "}
+            <Button
+              onClick={() => {
+                console.log("dialog open");
+                setDialogOpen(true);
+              }}
+            >
+              <Text>Open Dialog</Text>
+            </Button>
+          </Container>
         )}
         <Container flexDirection="row" gap={10}>
           <Button
