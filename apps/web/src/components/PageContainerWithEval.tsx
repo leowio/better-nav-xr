@@ -93,13 +93,17 @@ export function PageContainerWithEval() {
   // Update ref with current evaluableItems
   evaluableItemsRef.current = evaluableItems;
 
-  // Start the first evaluation automatically on mount
+  // Expose start function to window for manual trigger
   useEffect(() => {
     const firstItem = evaluableItems[0];
-    const timeoutId = setTimeout(() => {
+    (window as any).startFirstEvaluation = () => {
+      console.log("Starting first evaluation manually...");
       startEvaluation(firstItem.id, firstItem.name);
-    }, 5000);
-    return () => clearTimeout(timeoutId);
+    };
+
+    return () => {
+      delete (window as any).startFirstEvaluation;
+    };
   }, []);
 
   // Cleanup timeout on unmount
