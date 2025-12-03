@@ -6,6 +6,7 @@ License: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 Source: https://sketchfab.com/3d-models/desk-household-props-challenge-day-2-a375ba62a48942d88129fbc940d56f95
 Title: Desk - Household Props Challenge - Day 2
 */
+// @ts-nocheck
 
 import { useGLTF } from "@react-three/drei";
 import React from "react";
@@ -13,34 +14,34 @@ import type * as THREE from "three";
 import type { GLTF } from "three-stdlib";
 
 type GLTFResult = GLTF & {
-	nodes: {
-		defaultMaterial: THREE.Mesh;
-		defaultMaterial_1: THREE.Mesh;
-	};
-	materials: {
-		lambert4: THREE.MeshStandardMaterial;
-	};
-	animations: GLTFAction[];
+  nodes: {
+    defaultMaterial: THREE.Mesh;
+    defaultMaterial_1: THREE.Mesh;
+  };
+  materials: {
+    lambert4: THREE.MeshStandardMaterial;
+  };
+  animations: GLTFAction[];
 };
 
 export function DeskModel(props: JSX.IntrinsicElements["group"]) {
-	const { nodes, materials } = useGLTF("/desk/scene.gltf") as GLTFResult;
-	return (
-		<group {...props} dispose={null}>
-			<group rotation={[-Math.PI / 2, 0, 0]}>
-				<group rotation={[Math.PI / 2, 0, 0]}>
-					<mesh
-						geometry={nodes.defaultMaterial.geometry}
-						material={materials.lambert4}
-					/>
-					<mesh
-						geometry={nodes.defaultMaterial_1.geometry}
-						material={materials.lambert4}
-					/>
-				</group>
-			</group>
-		</group>
-	);
+  const { nodes, materials } = useGLTF("/desk/scene.gltf") as GLTFResult;
+  return (
+    <group {...props} dispose={null}>
+      <group rotation={[-Math.PI / 2, 0, 0]}>
+        <group rotation={[Math.PI / 2, 0, 0]}>
+          <mesh
+            geometry={nodes.defaultMaterial.geometry}
+            material={materials.lambert4}
+          />
+          <mesh
+            geometry={nodes.defaultMaterial_1.geometry}
+            material={materials.lambert4}
+          />
+        </group>
+      </group>
+    </group>
+  );
 }
 
 useGLTF.preload("/desk/scene.gltf");

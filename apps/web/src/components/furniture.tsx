@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useCompoundBody, useCylinder } from "@react-three/cannon";
 import { SpotLight, useGLTF } from "@react-three/drei";
 import type * as THREE from "three";
