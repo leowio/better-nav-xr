@@ -20,6 +20,13 @@ export default defineConfig({
     alias: {
       "~": path.resolve(__dirname, "./src/"),
     },
-    dedupe: ["@react-three/fiber", "three"],
+    dedupe: [
+      "@react-three/fiber",
+      "three",
+      "@react-three/xr",
+      "react",
+      "react-dom",
+      "jotai",
+    ],
   },
 });

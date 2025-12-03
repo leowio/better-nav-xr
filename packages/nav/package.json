@@ -11,7 +11,18 @@
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@react-three/cannon": "*",
+    "@react-three/drei": "*",
+    "@react-three/fiber": "*",
+    "@react-three/xr": "*",
+    "jotai": "*",
+    "react": "*",
+    "react-dom": "*",
+    "three": "*",
+    "three-stdlib": "*"
+  },
+  "devDependencies": {
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^10.5.0",
     "@react-three/fiber": "^9.2.0",
@@ -20,9 +31,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "three": "^0.178.0",
-    "three-stdlib": "^2.36.0"
-  },
-  "devDependencies": {
+    "three-stdlib": "^2.36.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@types/three": "^0.181.0",
