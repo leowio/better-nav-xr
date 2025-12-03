@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as EvalRouteImport } from './routes/eval'
+import { Route as DocRouteImport } from './routes/doc'
 import { Route as IndexRouteImport } from './routes/index'
 
 const EvalRoute = EvalRouteImport.update({
   id: '/eval',
   path: '/eval',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocRoute = DocRouteImport.update({
+  id: '/doc',
+  path: '/doc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,27 +31,31 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/doc': typeof DocRoute
   '/eval': typeof EvalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/doc': typeof DocRoute
   '/eval': typeof EvalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/doc': typeof DocRoute
   '/eval': typeof EvalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/eval'
+  fullPaths: '/' | '/doc' | '/eval'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/eval'
-  id: '__root__' | '/' | '/eval'
+  to: '/' | '/doc' | '/eval'
+  id: '__root__' | '/' | '/doc' | '/eval'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DocRoute: typeof DocRoute
   EvalRoute: typeof EvalRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/eval'
       fullPath: '/eval'
       preLoaderRoute: typeof EvalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doc': {
+      id: '/doc'
+      path: '/doc'
+      fullPath: '/doc'
+      preLoaderRoute: typeof DocRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DocRoute: DocRoute,
   EvalRoute: EvalRoute,
 }
 export const routeTree = rootRouteImport

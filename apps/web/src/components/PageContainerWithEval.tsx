@@ -9,7 +9,6 @@ const SCROLL_AMOUNT = 200;
 type EvaluableItem = {
   id: string;
   name: string;
-  action: () => void;
 };
 
 export function PageContainerWithEval() {
@@ -26,6 +25,9 @@ export function PageContainerWithEval() {
   const startEvaluation = (itemId: string, itemName: string) => {
     setActiveEvaluation(itemId);
     setStatusText(`Evaluating: ${itemName}...`);
+    if (itemId === "cancel-dialog" || itemId === "confirm-dialog") {
+      setDialogOpen(true);
+    }
     timerStartRef.current = performance.now();
   };
 
@@ -70,23 +72,22 @@ export function PageContainerWithEval() {
     {
       id: "scroll-to-specific-item",
       name: "Scroll to Specific Item",
-      action: () => {
-        startEvaluation("scroll-to-specific-item", "Scroll to Specific Item");
-      },
     },
     {
       id: "next-page",
       name: "Next Page Button",
-      action: () => {
-        startEvaluation("next-page", "Go to next page");
-      },
+    },
+    {
+      id: "cancel-dialog",
+      name: "Cancel Dialog",
+    },
+    {
+      id: "confirm-dialog",
+      name: "Confirm Dialog",
     },
     {
       id: "previous-page",
       name: "Previous Page Button",
-      action: () => {
-        startEvaluation("previous-page", "Go to previous page");
-      },
     },
   ];
 
@@ -244,7 +245,19 @@ export function PageContainerWithEval() {
             <DialogDemo
               dialogOpen={dialogOpen}
               setDialogOpen={setDialogOpen}
-            />{" "}
+              onCancel={() => {
+                if (activeEvaluation === "cancel-dialog") {
+                  stopEvaluation("cancel-dialog");
+                  setDialogOpen(false);
+                }
+              }}
+              onConfirm={() => {
+                if (activeEvaluation === "confirm-dialog") {
+                  stopEvaluation("confirm-dialog");
+                  setDialogOpen(false);
+                }
+              }}
+            />
             <Button
               onClick={() => {
                 console.log("dialog open");

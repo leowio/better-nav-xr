@@ -12,9 +12,13 @@ import { Text } from "@react-three/uikit";
 export function DialogDemo({
   dialogOpen,
   setDialogOpen,
+  onCancel,
+  onConfirm,
 }: {
   dialogOpen: boolean;
   setDialogOpen: (open: boolean) => void;
+  onCancel?: () => void;
+  onConfirm?: () => void;
 }) {
   return (
     <>
@@ -31,7 +35,7 @@ export function DialogDemo({
           <DialogFooter>
             <Button
               onClick={() => {
-                setDialogOpen(false);
+                onCancel?.();
               }}
               variant="destructive"
             >
@@ -39,7 +43,7 @@ export function DialogDemo({
             </Button>
             <Button
               onClick={() => {
-                setDialogOpen(false);
+                onConfirm?.();
               }}
             >
               <Text>Confirm</Text>
