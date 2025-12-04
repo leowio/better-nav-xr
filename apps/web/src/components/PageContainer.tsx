@@ -2,7 +2,7 @@ import { Container, Text } from "@react-three/uikit";
 import { colors, Button } from "@react-three/uikit-default";
 import { useState, useRef } from "react";
 import { DialogDemo } from "./DialogDemo";
-import { useSwipeGesture } from "@repo/nav/hooks";
+import { useSwipeGesture, useThumbGesture } from "@repo/nav/hooks";
 
 const SCROLL_AMOUNT = 200;
 
@@ -130,6 +130,15 @@ export function PageContainer() {
     onRight: () => setCurrentPage(1),
     onUp: () => handleScrollUp(),
     onDown: () => handleScrollDown(),
+  });
+
+  useThumbGesture({
+    onThumbsUp: () => {
+      console.log("thumbs up");
+    },
+    onThumbsDown: () => {
+      console.log("thumbs down");
+    },
   });
 
   return (

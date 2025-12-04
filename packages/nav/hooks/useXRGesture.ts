@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import { Vector3 } from "three";
 import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { gestureAtom } from "../helpers/gesture";
@@ -69,7 +70,14 @@ export function useUpdateGesture() {
   const [, setGesture] = useAtom(gestureAtom);
 
   useEffect(() => {
-    setGesture((prev) => ({ ...prev, neutral: isNeutral }));
+    setGesture((prev) => {
+      if (!prev.enabled) {
+        return prev.neutral ? { ...prev, neutral: false } : prev;
+      }
+      return prev.neutral !== isNeutral
+        ? { ...prev, neutral: isNeutral }
+        : prev;
+    });
   }, [isNeutral, setGesture]);
 }
 
@@ -179,6 +187,7 @@ export function useSwipeGesture(
   const { joints } = useXRJointsContext();
   const { triggerGesture } = useGestureManager();
   const { isNeutral } = useNeutralHandPos();
+  const [gesture] = useAtom(gestureAtom);
   const previousPosition = useRef<{ x: number; y: number; z: number } | null>(
     null
   );
@@ -192,6 +201,9 @@ export function useSwipeGesture(
   const currentDirection = useRef<SwipeDirection | null>(null);
 
   useFrame((state) => {
+    if (!gesture.enabled) {
+      return;
+    }
     if (!joints) {
       // Reset tracking if joints are not available
       previousPosition.current = null;
@@ -395,5 +407,95 @@ export function useSwipeGesture(
     // Update previous position and time
     previousPosition.current = { ...currentPosition };
     previousTime.current = currentTime;
+  });
+}
+
+export interface ThumbGestureCallbacks {
+  onThumbsUp?: () => void;
+  onThumbsDown?: () => void;
+}
+
+export function useThumbGesture(callbacks: ThumbGestureCallbacks) {
+  const { joints } = useXRJointsContext();
+  const { triggerGesture } = useGestureManager();
+  const [gesture, setGesture] = useAtom(gestureAtom);
+  const lastState = useRef({ thumbsUp: false, thumbsDown: false });
+
+  useFrame(() => {
+    if (!gesture.enabled) {
+      if (
+        lastState.current.thumbsUp !== false ||
+        lastState.current.thumbsDown !== false
+      ) {
+        setGesture((prev) => ({
+          ...prev,
+          thumbsUp: false,
+          thumbsDown: false,
+        }));
+        lastState.current = { thumbsUp: false, thumbsDown: false };
+      }
+      return;
+    }
+
+    let thumbsUp = false;
+    let thumbsDown = false;
+
+    if (joints) {
+      const thumbTip = getJointXYZ(getJointTransform("Thumb_Tip", joints));
+      const thumbDistal = getJointXYZ(
+        getJointTransform("Thumb_Phalanx_Distal", joints)
+      );
+      const thumbMetacarpal = getJointXYZ(
+        getJointTransform("Thumb_Metacarpal", joints)
+      );
+      const indexTip = getJointXYZ(getJointTransform("Index_Tip", joints));
+      const middleTip = getJointXYZ(getJointTransform("Middle_Tip", joints));
+      const middleMetacarpal = getJointXYZ(
+        getJointTransform("Middle_Metacarpal", joints)
+      );
+
+      // 1. Middle tip is close to their Metacarpal (Curled fingers)
+      const middleCurlDistance = middleTip.distanceTo(middleMetacarpal);
+
+      if (middleCurlDistance <= 0.1) {
+        // 2. Thumb tip distance to index tip is longer than thumb distal to index tip
+        const thumbTipToIndex = thumbTip.distanceTo(indexTip);
+        const thumbDistalToIndex = thumbDistal.distanceTo(indexTip);
+
+        if (thumbTipToIndex > thumbDistalToIndex) {
+          // 3. Detect orientation
+          // Vector from Metacarpal to Tip
+          const thumbDirection = thumbTip
+            .clone()
+            .sub(thumbMetacarpal)
+            .normalize();
+
+          // Up is +Y
+          if (thumbDirection.y > 0.5) {
+            thumbsUp = true;
+          } else if (thumbDirection.y < -0.5) {
+            thumbsDown = true;
+          }
+        }
+      }
+    }
+
+    if (
+      lastState.current.thumbsUp !== thumbsUp ||
+      lastState.current.thumbsDown !== thumbsDown
+    ) {
+      setGesture((prev) => ({ ...prev, thumbsUp, thumbsDown }));
+      lastState.current = { thumbsUp, thumbsDown };
+    }
+
+    if (thumbsUp) {
+      if (triggerGesture()) {
+        callbacks.onThumbsUp?.();
+      }
+    } else if (thumbsDown) {
+      if (triggerGesture()) {
+        callbacks.onThumbsDown?.();
+      }
+    }
   });
 }

@@ -2,7 +2,7 @@ import { Container, Text } from "@react-three/uikit";
 import { colors, Button } from "@react-three/uikit-default";
 import { useState, useRef, useEffect } from "react";
 import { DialogDemo } from "./DialogDemo";
-import { useSwipeGesture } from "@repo/nav/hooks";
+import { useSwipeGesture, useThumbGesture } from "@repo/nav/hooks";
 
 const SCROLL_AMOUNT = 200;
 
@@ -157,6 +157,31 @@ export function PageContainerWithEval() {
     onRight: () => handlePreviousPage(),
     onUp: () => handleScrollUp(),
     onDown: () => handleScrollDown(),
+  });
+
+  useThumbGesture({
+    onThumbsUp: () => {
+      console.log("thumbs up detected");
+      if (dialogOpen && activeEvaluation === "confirm-dialog") {
+        stopEvaluation("confirm-dialog");
+        setDialogOpen(false);
+      } else if (dialogOpen) {
+        // Just close dialog if open but not evaluating confirm specifically
+        // Or you might want to bind it to confirm action generally?
+        // For this specific requirement "use thumbs up... to handle accept",
+        // let's make it trigger the confirm action if dialog is open.
+        setDialogOpen(false);
+      }
+    },
+    onThumbsDown: () => {
+      console.log("thumbs down detected");
+      if (dialogOpen && activeEvaluation === "cancel-dialog") {
+        stopEvaluation("cancel-dialog");
+        setDialogOpen(false);
+      } else if (dialogOpen) {
+        setDialogOpen(false);
+      }
+    },
   });
 
   return (

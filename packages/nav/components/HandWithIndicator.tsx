@@ -41,8 +41,16 @@ const HandWithIndicator = ({
         const originalColor = originalColorsRef.current.get(material);
 
         if (originalColor) {
-          if (gesture.neutral) {
-            // Apply green tint
+          if (gesture.thumbsUp) {
+            material.color.setHex(0x00ff00);
+            material.emissive.setHex(0x00ff00);
+            material.emissiveIntensity = 0.5;
+          } else if (gesture.thumbsDown) {
+            material.color.setHex(0xff0000);
+            material.emissive.setHex(0xff0000);
+            material.emissiveIntensity = 0.5;
+          } else if (gesture.neutral) {
+            // Apply neutral tint
             material.color.setHex(neutralColorHex);
             material.emissive.setHex(neutralColorHex);
             material.emissiveIntensity = 0.3;
@@ -57,7 +65,13 @@ const HandWithIndicator = ({
         }
       }
     });
-  }, [gesture.neutral, offColorHex, neutralColorHex]);
+  }, [
+    gesture.neutral,
+    gesture.thumbsUp,
+    gesture.thumbsDown,
+    offColorHex,
+    neutralColorHex,
+  ]);
 
   return (
     <>

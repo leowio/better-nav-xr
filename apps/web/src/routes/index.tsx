@@ -6,22 +6,25 @@ import Scene from "~/components/scene";
 import { XRJointsProvider } from "@repo/nav/components";
 import { PageContainer } from "~/components/PageContainer";
 import { HandWithIndicator } from "@repo/nav/components";
+import { useGestureDebug } from "@repo/nav/helpers";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
+const store = createXRStore({
+  hand: {
+    left: true,
+    right: () => <HandWithIndicator neutralColorHex={0x2ea9df} />,
+  },
+  offerSession: "immersive-vr",
+  emulate: {
+    inject: false,
+  },
+});
+
 function Index() {
-  const store = createXRStore({
-    hand: {
-      left: true,
-      right: () => <HandWithIndicator neutralColorHex={0x2ea9df} />,
-    },
-    offerSession: "immersive-vr",
-    emulate: {
-      inject: false,
-    },
-  });
+  useGestureDebug();
 
   return (
     <main className="relative h-[800px] w-[800px] grow-0 rounded-lg bg-linear-to-b from-[#2e026d] to-[#15162c] overflow-hidden">
