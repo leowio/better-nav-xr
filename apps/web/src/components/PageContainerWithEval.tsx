@@ -123,7 +123,6 @@ export function PageContainerWithEval() {
       const maxScrollPosition = container.maxScrollPosition?.value;
 
       if (scrollPosition && Array.isArray(scrollPosition)) {
-        console.log("scrollPosition", scrollPosition);
         // scrollPosition is [x, y], swipe up means scroll content up (increase y)
         const currentY = scrollPosition[1] || 0;
         const maxY = maxScrollPosition?.[1] || 0;
@@ -141,7 +140,6 @@ export function PageContainerWithEval() {
       const maxScrollPosition = container.maxScrollPosition?.value;
 
       if (scrollPosition && Array.isArray(scrollPosition)) {
-        console.log("scrollPosition", scrollPosition);
         // scrollPosition is [x, y], swipe down means scroll content down (decrease y)
         const currentY = scrollPosition[1] || 0;
         const maxY = maxScrollPosition?.[1] || 0;
@@ -161,7 +159,6 @@ export function PageContainerWithEval() {
 
   useThumbGesture({
     onThumbsUp: () => {
-      console.log("thumbs up detected");
       if (dialogOpen && activeEvaluation === "confirm-dialog") {
         stopEvaluation("confirm-dialog");
         setDialogOpen(false);
@@ -174,7 +171,6 @@ export function PageContainerWithEval() {
       }
     },
     onThumbsDown: () => {
-      console.log("thumbs down detected");
       if (dialogOpen && activeEvaluation === "cancel-dialog") {
         stopEvaluation("cancel-dialog");
         setDialogOpen(false);
@@ -285,7 +281,6 @@ export function PageContainerWithEval() {
             />
             <Button
               onClick={() => {
-                console.log("dialog open");
                 setDialogOpen(true);
               }}
             >
