@@ -6,6 +6,7 @@ export type Gesture = {
 	lastGestureTime: number;
 	thumbsUp: boolean;
 	thumbsDown: boolean;
+	thumbHoldProgress: number; // 0-1, progress toward confirmation
 	enabled: boolean;
 };
 
@@ -15,5 +16,6 @@ export const gestureAtom = atom<Gesture>({
 	isBlocked: false,
 	thumbsUp: false,
 	thumbsDown: false,
+	thumbHoldProgress: 0,
 	enabled: true,
 });

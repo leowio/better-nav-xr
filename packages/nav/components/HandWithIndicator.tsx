@@ -41,14 +41,19 @@ const HandWithIndicator = ({
         const originalColor = originalColorsRef.current.get(material);
 
         if (originalColor) {
-          if (gesture.thumbsUp) {
-            material.color.setHex(0x00ff00);
-            material.emissive.setHex(0x00ff00);
-            material.emissiveIntensity = 0.5;
-          } else if (gesture.thumbsDown) {
-            material.color.setHex(0xff0000);
-            material.emissive.setHex(0xff0000);
-            material.emissiveIntensity = 0.5;
+          if (gesture.thumbsUp || gesture.thumbsDown) {
+            // Progressive color fill based on hold progress
+            const targetColor = new THREE.Color(
+              gesture.thumbsUp ? 0x00ff00 : 0xff0000
+            );
+            const neutralColor = new THREE.Color(neutralColorHex);
+            const progress = gesture.thumbHoldProgress;
+
+            // Interpolate between neutral color and target color
+            material.color.lerpColors(neutralColor, targetColor, progress);
+            material.emissive.lerpColors(neutralColor, targetColor, progress);
+            // Increase emissive intensity as progress increases
+            material.emissiveIntensity = 0.3 + progress * 0.5;
           } else if (gesture.neutral) {
             // Apply neutral tint
             material.color.setHex(neutralColorHex);
@@ -69,6 +74,7 @@ const HandWithIndicator = ({
     gesture.neutral,
     gesture.thumbsUp,
     gesture.thumbsDown,
+    gesture.thumbHoldProgress,
     offColorHex,
     neutralColorHex,
   ]);

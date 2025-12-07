@@ -415,13 +415,20 @@ export interface ThumbGestureCallbacks {
   onThumbsDown?: () => void;
 }
 
-export function useThumbGesture(callbacks: ThumbGestureCallbacks) {
+export function useThumbGesture(
+  callbacks: ThumbGestureCallbacks,
+  holdDuration: number = 0.5
+) {
   const { joints } = useXRJointsContext();
   const { triggerGesture } = useGestureManager();
   const [gesture, setGesture] = useAtom(gestureAtom);
   const lastState = useRef({ thumbsUp: false, thumbsDown: false });
+  const holdStartTime = useRef<number | null>(null);
+  const hasTriggered = useRef(false);
 
-  useFrame(() => {
+  useFrame((state) => {
+    const currentTime = state.clock.getElapsedTime();
+
     if (!gesture.enabled) {
       if (
         lastState.current.thumbsUp !== false ||
@@ -431,9 +438,12 @@ export function useThumbGesture(callbacks: ThumbGestureCallbacks) {
           ...prev,
           thumbsUp: false,
           thumbsDown: false,
+          thumbHoldProgress: 0,
         }));
         lastState.current = { thumbsUp: false, thumbsDown: false };
       }
+      holdStartTime.current = null;
+      hasTriggered.current = false;
       return;
     }
 
@@ -480,21 +490,45 @@ export function useThumbGesture(callbacks: ThumbGestureCallbacks) {
       }
     }
 
-    if (
+    const isGestureActive = thumbsUp || thumbsDown;
+    const gestureChanged =
       lastState.current.thumbsUp !== thumbsUp ||
-      lastState.current.thumbsDown !== thumbsDown
-    ) {
-      setGesture((prev) => ({ ...prev, thumbsUp, thumbsDown }));
+      lastState.current.thumbsDown !== thumbsDown;
+
+    // Handle gesture state changes
+    if (gestureChanged) {
+      // Reset hold tracking when gesture changes
+      holdStartTime.current = isGestureActive ? currentTime : null;
+      hasTriggered.current = false;
+    }
+
+    // Calculate hold progress
+    let holdProgress = 0;
+    if (isGestureActive && holdStartTime.current !== null) {
+      const elapsed = currentTime - holdStartTime.current;
+      holdProgress = Math.min(elapsed / holdDuration, 1);
+    }
+
+    // Update gesture state
+    if (gestureChanged || gesture.thumbHoldProgress !== holdProgress) {
+      setGesture((prev) => ({
+        ...prev,
+        thumbsUp,
+        thumbsDown,
+        thumbHoldProgress: holdProgress,
+      }));
       lastState.current = { thumbsUp, thumbsDown };
     }
 
-    if (thumbsUp) {
+    // Trigger callback only when hold is complete and hasn't triggered yet
+    if (holdProgress >= 1 && !hasTriggered.current) {
       if (triggerGesture()) {
-        callbacks.onThumbsUp?.();
-      }
-    } else if (thumbsDown) {
-      if (triggerGesture()) {
-        callbacks.onThumbsDown?.();
+        hasTriggered.current = true;
+        if (thumbsUp) {
+          callbacks.onThumbsUp?.();
+        } else if (thumbsDown) {
+          callbacks.onThumbsDown?.();
+        }
       }
     }
   });
