@@ -71,11 +71,11 @@ export function PageContainerWithEval() {
   const evaluableItems: EvaluableItem[] = [
     {
       id: "scroll-to-specific-item",
-      name: "Scroll to Specific Item",
+      name: "Scroll to Click Me Button and click it",
     },
     {
       id: "next-page",
-      name: "Next Page Button",
+      name: "Go to Next Page",
     },
     {
       id: "cancel-dialog",
@@ -87,7 +87,7 @@ export function PageContainerWithEval() {
     },
     {
       id: "previous-page",
-      name: "Previous Page Button",
+      name: "Go to Previous Page",
     },
   ];
 
